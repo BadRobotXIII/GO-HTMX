@@ -28,7 +28,6 @@ func NewServer() *server {
 		subscribeBuffer: 10,
 		subscribers:     make(map[*subscriber]struct{}),
 	}
-
 	s.mux.Handle("/", http.FileServer(http.Dir("C:\\Users\\kzulf\\Dropbox\\Coding\\GoLang\\Go-htmx\\htmx")))
 	s.mux.HandleFunc("/ws", s.subscribeHandler)
 	return s
@@ -36,7 +35,6 @@ func NewServer() *server {
 
 func (s *server) subscribeHandler(writer http.ResponseWriter, req *http.Request) {
 	err := s.subscribe(req.Context(), writer, req)
-	fmt.Println(err)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -68,7 +66,7 @@ func (s *server) subscribe(ctx context.Context, writer http.ResponseWriter, req 
 	for {
 		select {
 		case msg := <-subscriber.msgs:
-			ctx, cancel := context.WithTimeout(ctx, time.Second)
+			ctx, cancel := context.WithTimeout(ctx, time.Second*5)
 			defer cancel()
 			err := c.Write(ctx, websocket.MessageText, msg)
 			if err != nil {
@@ -83,7 +81,7 @@ func (s *server) subscribe(ctx context.Context, writer http.ResponseWriter, req 
 
 func (s *server) broadcast(msg []byte) {
 	s.subscribersMutex.Lock()
-
+	defer s.subscribersMutex.Unlock()
 	for subscriber := range s.subscribers {
 		subscriber.msgs <- msg
 	}
@@ -94,35 +92,36 @@ func main() {
 	srvr := NewServer()
 	go func(s *server) {
 		for {
-			_, err := hardware.GetSystem()
+			systemMonitor, err := hardware.GetSystem()
 			if err != nil {
 				fmt.Println(err)
+			} else {
+				fmt.Println(systemMonitor)
 			}
 
-			// diskMonitor, err := hardware.GetDisk()
-			// if err != nil {
-			// 	fmt.Println(err)
-			// }
+			diskMonitor, err := hardware.GetDisk()
+			if err != nil {
+				fmt.Println(err)
+			} else {
+				fmt.Println(diskMonitor)
+			}
 
-			// cpuMonitor, err := hardware.GetCPU()
-			// if err != nil {
-			// 	fmt.Println(err)
-			// }
+			cpuMonitor, err := hardware.GetCPU()
+			if err != nil {
+				fmt.Println(err)
+			} else {
+				fmt.Println(cpuMonitor)
+			}
 
 			timeStamp := time.Now().Format("2006-01-02 15:04:05")
 
-			html := `
+			msg := []byte(`
 			<div hx-swap-oob="innerHTML:#update-timestamp"> ` + timeStamp + ` </div>
-			`
-			s.broadcast([]byte(html))
+			<div hx-swap-oob="innerHTML:#system-data"> ` + systemMonitor + ` </div>
+			<div hx-swap-oob="innerHTML:#disk-data"> ` + diskMonitor + ` </div>
+			<div hx-swap-oob="innerHTML:#cpu-data"> ` + cpuMonitor + ` </div>`)
 
-			// s.broadcast([]byte(systemMonitor))
-			// s.broadcast([]byte(diskMonitor))
-			// s.broadcast([]byte(cpuMonitor))
-
-			// fmt.Println(systemMonitor)
-			// fmt.Println(diskMonitor)
-			// fmt.Println(cpuMonitor)
+			s.broadcast(msg)
 
 			time.Sleep(3 * time.Second)
 		}
@@ -130,7 +129,7 @@ func main() {
 
 	fmt.Println("Starting server...")
 
-	err := http.ListenAndServe(":3000", &srvr.mux)
+	err := http.ListenAndServe(":8081", &srvr.mux)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

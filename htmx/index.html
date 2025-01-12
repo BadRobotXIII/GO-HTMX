@@ -7,12 +7,12 @@
 </head>
 <body>
     <h1>Sytem Hardware Monitor</h1>
-    <div hx-ext="ws" ws-connect="ws://localhost:3000/ws">
+    <div hx-ext="ws" ws-connect="ws://localhost:8081/ws">
         <div id="update-timestamp">Loading Data...</div>
         <div id="monitor-data">
-        <div id="system-data"></div>
-        <div id="disk-data"></div>
-        <div id="cpu-data"></div>
+            <div id="system-data">System Data</div>
+            <div id="disk-data">Disk Data</div>
+            <div id="cpu-data">CPU Data</div>
         </div>
     </div>
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
