@@ -36,6 +36,7 @@ func NewServer() *server {
 
 func (s *server) subscribeHandler(writer http.ResponseWriter, req *http.Request) {
 	err := s.subscribe(req.Context(), writer, req)
+	fmt.Println(err)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -80,35 +81,55 @@ func (s *server) subscribe(ctx context.Context, writer http.ResponseWriter, req 
 
 }
 
+func (s *server) broadcast(msg []byte) {
+	s.subscribersMutex.Lock()
+
+	for subscriber := range s.subscribers {
+		subscriber.msgs <- msg
+	}
+}
+
 func main() {
 	fmt.Println("Starting system monitor...")
-	go func() {
+	srvr := NewServer()
+	go func(s *server) {
 		for {
-			systemMonitor, err := hardware.GetSystem()
+			_, err := hardware.GetSystem()
 			if err != nil {
 				fmt.Println(err)
 			}
 
-			diskMonitor, err := hardware.GetDisk()
-			if err != nil {
-				fmt.Println(err)
-			}
+			// diskMonitor, err := hardware.GetDisk()
+			// if err != nil {
+			// 	fmt.Println(err)
+			// }
 
-			cpuMonitor, err := hardware.GetCPU()
-			if err != nil {
-				fmt.Println(err)
-			}
+			// cpuMonitor, err := hardware.GetCPU()
+			// if err != nil {
+			// 	fmt.Println(err)
+			// }
 
-			fmt.Println(systemMonitor)
-			fmt.Println(diskMonitor)
-			fmt.Println(cpuMonitor)
+			timeStamp := time.Now().Format("2006-01-02 15:04:05")
+
+			html := `
+			<div hx-swap-oob="innerHTML:#update-timestamp"> ` + timeStamp + ` </div>
+			`
+			s.broadcast([]byte(html))
+
+			// s.broadcast([]byte(systemMonitor))
+			// s.broadcast([]byte(diskMonitor))
+			// s.broadcast([]byte(cpuMonitor))
+
+			// fmt.Println(systemMonitor)
+			// fmt.Println(diskMonitor)
+			// fmt.Println(cpuMonitor)
 
 			time.Sleep(3 * time.Second)
 		}
-	}()
+	}(srvr)
 
 	fmt.Println("Starting server...")
-	srvr := NewServer()
+
 	err := http.ListenAndServe(":3000", &srvr.mux)
 	if err != nil {
 		fmt.Println(err)
