@@ -19,8 +19,6 @@ type server struct {
 	subscribers      map[*subscriber]struct{}
 }
 
-http.ServeMux
-
 type subscriber struct {
 	msgs chan []byte
 }
@@ -31,7 +29,7 @@ func NewServer() *server {
 		subscribers:     make(map[*subscriber]struct{}),
 	}
 
-	s.mux.Handle("/", http.FileServer(http.Dir("/htmx")))
+	s.mux.Handle("/", http.FileServer(http.Dir("C:\\Users\\kzulf\\Dropbox\\Coding\\GoLang\\Go-htmx\\htmx")))
 	s.mux.HandleFunc("/ws", s.subscribeHandler)
 	return s
 }
