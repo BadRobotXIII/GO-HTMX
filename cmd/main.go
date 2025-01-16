@@ -99,6 +99,10 @@ func main() {
 				fmt.Println(systemMonitor)
 			}
 
+			sysMon := systemMonitor
+
+			fmt.Printf("Sys Mon: %v", sysMon)
+
 			diskMonitor, err := hardware.GetDisk()
 			if err != nil {
 				fmt.Println(err)
@@ -117,7 +121,7 @@ func main() {
 
 			msg := []byte(`
 			<div hx-swap-oob="innerHTML:#update-timestamp"> ` + timeStamp + ` </div>
-			<div hx-swap-oob="innerHTML:#system-data"> ` + systemMonitor + ` </div>
+			<div hx-swap-oob="innerHTML:#system-data"> ` + systemMonitor.RunTimeOS + ` </div>
 			<div hx-swap-oob="innerHTML:#disk-data"> ` + diskMonitor + ` </div>
 			<div hx-swap-oob="innerHTML:#cpu-data"> ` + cpuMonitor + ` </div>`)
 

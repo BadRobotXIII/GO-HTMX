@@ -5,6 +5,7 @@ go 1.23.4
 require (
 	github.com/coder/websocket v1.8.12
 	github.com/shirou/gopsutil v3.21.11+incompatible
+	golang.org/x/text v0.21.0
 )
 
 require (

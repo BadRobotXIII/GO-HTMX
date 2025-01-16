@@ -4,16 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Harware Monitor</title>
+    <link rel="stylesheet" href="./output.css">
 </head>
 <body>
-    <h1>Sytem Hardware Monitor</h1>
+    <h1 class="text-4xl font-bold underline text-green-400">Sytem Hardware Monitor</h1>
     <div hx-ext="ws" ws-connect="ws://localhost:8081/ws">
-        <div id="update-timestamp">Loading Data...</div>
-        <div id="monitor-data">
-            <div id="system-data">System Data</div>
-            <div id="disk-data">Disk Data</div>
-            <div id="cpu-data">CPU Data</div>
-        </div>
+        <div class="text-green-400" id="update-timestamp">Loading Data...></div>
+        <table id="PC Information">
+            <tbody>
+                <tr>
+                    <!-- <td>System Information</td> -->
+                    <td id="system-data">System Data></td>
+                </tr>
+                <tr>
+                    <td id="disk-data">Disk Data></td>
+                </tr>
+                <tr>
+                    <td id="cpu-data">CPU Data></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
     <script src="https://unpkg.com/htmx-ext-ws@2.0.1/ws.js"></script>
