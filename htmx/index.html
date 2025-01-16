@@ -10,17 +10,22 @@
     <h1 class="text-4xl font-bold underline text-green-400">Sytem Hardware Monitor</h1>
     <div hx-ext="ws" ws-connect="ws://localhost:8081/ws">
         <div class="text-green-400" id="update-timestamp">Loading Data...></div>
-        <table id="PC Information">
+        <table class="table-auto text-balance" id="PC Information">
+            <thead>
+                <tr>System Information</tr>
+            </thead>
             <tbody>
                 <tr>
-                    <!-- <td>System Information</td> -->
-                    <td id="system-data">System Data></td>
+                    <td>OS:</td>
+                    <td id="operating-system">OS></td>
                 </tr>
                 <tr>
-                    <td id="disk-data">Disk Data></td>
+                    <td>Disk Total:</td>
+                    <td id="disk-total">Disk Total></td>
                 </tr>
                 <tr>
-                    <td id="cpu-data">CPU Data></td>
+                    <td>CPU Type:</td>
+                    <td id="cpu-type">CPU Type></td>
                 </tr>
             </tbody>
         </table>

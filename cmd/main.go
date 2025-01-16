@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"sync"
 	"time"
 
@@ -101,7 +102,8 @@ func main() {
 
 			sysMon := systemMonitor
 
-			fmt.Printf("Sys Mon: %v", sysMon)
+			fmt.Printf("Sys Mon: %v\n", sysMon)
+			fmt.Printf("Runtime OS: %v\n", sysMon.RunTimeOS)
 
 			diskMonitor, err := hardware.GetDisk()
 			if err != nil {
@@ -121,9 +123,9 @@ func main() {
 
 			msg := []byte(`
 			<div hx-swap-oob="innerHTML:#update-timestamp"> ` + timeStamp + ` </div>
-			<div hx-swap-oob="innerHTML:#system-data"> ` + systemMonitor.RunTimeOS + ` </div>
-			<div hx-swap-oob="innerHTML:#disk-data"> ` + diskMonitor + ` </div>
-			<div hx-swap-oob="innerHTML:#cpu-data"> ` + cpuMonitor + ` </div>`)
+			<div hx-swap-oob="innerHTML:#operating-system"> ` + systemMonitor.RunTimeOS + ` </div>
+			<div hx-swap-oob="innerHTML:#disk-total"> ` + strconv.FormatUint(diskMonitor.DiscTotal, 10) + ` </div>
+			<div hx-swap-oob="innerHTML:#cpu-type"> ` + cpuMonitor.CpuType + ` </div>`)
 
 			s.broadcast(msg)
 

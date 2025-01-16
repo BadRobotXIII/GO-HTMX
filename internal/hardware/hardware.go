@@ -21,12 +21,13 @@ type SystemInfo struct {
 
 type CpuInfo struct {
 	CpuType  string
-	CpuCores uint64
+	CpuCores int
 }
 
 type DiskInfo struct {
 	DiscTotal uint64
 	DiscUsed  uint64
+	DiskFree  uint64
 }
 
 // Get system information
@@ -58,23 +59,36 @@ func GetSystem() (SystemInfo, error) {
 }
 
 // Get CPU data
-func GetCPU() (string, error) {
+func GetCPU() (CpuInfo, error) {
+
+	cpuInfo := CpuInfo{}
+
 	cpuStat, err := cpu.Info()
 	if err != nil {
-		return "", err
+		return CpuInfo{}, err
 	}
+	cpuInfo.CpuType = cpuStat[0].ModelName
+	cpuInfo.CpuCores = len(cpuStat)
 
-	output := fmt.Sprintf("CPU: %s\nCores %d", cpuStat[0].ModelName, len(cpuStat))
+	output := cpuInfo
+
+	fmt.Sprintf("CPU: %s\nCores %d", cpuInfo.CpuType, cpuInfo.CpuCores)
 	return output, nil
 }
 
 // Get disk data
-func GetDisk() (string, error) {
+func GetDisk() (DiskInfo, error) {
+	diskInf := DiskInfo{}
 	diskStat, err := disk.Usage("/")
 	if err != nil {
-		return "", err
+		return DiskInfo{}, err
 	}
 
-	output := fmt.Sprintf("Total Disk Space: %d\nFree Disk Space: %d", diskStat.Total, diskStat.Free)
+	diskInf.DiscTotal = diskStat.Total
+	diskInf.DiscUsed = diskStat.Used
+	diskInf.DiscUsed = diskStat.Free
+
+	fmt.Sprintf("Total Disk Space: %d\n Used Disk Space: %d\n Free Disk Space: %d", diskInf.DiscTotal, diskInf.DiscUsed, diskInf.DiscUsed)
+	output := diskInf
 	return output, nil
 }
