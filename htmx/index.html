@@ -7,25 +7,33 @@
     <link rel="stylesheet" href="./output.css">
 </head>
 <body>
-    <h1 class="text-4xl font-bold underline text-green-400">Sytem Hardware Monitor</h1>
+    <h1 class="text-4xl font-bold underline text-green-400 ">Sytem Hardware Monitor</h1>
     <div hx-ext="ws" ws-connect="ws://localhost:8081/ws">
         <div class="text-green-400" id="update-timestamp">Loading Data...></div>
-        <table class="table-auto text-balance" id="PC Information">
+        <table class="table border-black"  id="PC Information">
             <thead>
-                <tr>System Information</tr>
+                <th scope="col">System Information</th>
             </thead>
-            <tbody>
-                <tr>
+            <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
+                <tr class="hover:bg-gray-300 dark:hover:divide-green-400">
                     <td>OS:</td>
                     <td id="operating-system">OS></td>
                 </tr>
-                <tr>
+                <tr class="hover:bg-gray-300 dark:hover:divide-green-400">
                     <td>Disk Total:</td>
                     <td id="disk-total">Disk Total></td>
                 </tr>
-                <tr>
+                <tr class="hover:bg-gray-300 dark:hover:divide-green-400">
                     <td>CPU Type:</td>
                     <td id="cpu-type">CPU Type></td>
+                </tr>
+                <tr class="hover:bg-gray-300 dark:hover:divide-green-400">
+                    <td >Next Row</td>
+                    <td>Next Column</td>
+                </tr>
+                <tr >
+                    <td></td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>
