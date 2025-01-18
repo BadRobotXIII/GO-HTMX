@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"runtime"
 
+	"github.com/go-gl/gldebug/gpuinfo"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
@@ -28,6 +29,12 @@ type DiskInfo struct {
 	DiscTotal uint64
 	DiscUsed  uint64
 	DiskFree  uint64
+}
+
+type GpuInfo struct {
+	GpuType string
+	GpuFree int
+	GpuUsed int
 }
 
 // Get system information
@@ -91,4 +98,16 @@ func GetDisk() (DiskInfo, error) {
 	fmt.Sprintf("Total Disk Space: %d\n Used Disk Space: %d\n Free Disk Space: %d", diskInf.DiscTotal, diskInf.DiscUsed, diskInf.DiscUsed)
 	output := diskInf
 	return output, nil
+}
+
+func GetGPU() GpuInfo {
+	gpuInf := GpuInfo{}
+
+	gpu := gpuinfo.NVGpu{}
+	gpuInf.GpuFree = gpu.Free()
+
+	println("GPU Free: %d", gpuInf.GpuFree)
+
+	return gpuInf
+
 }

@@ -67,7 +67,7 @@ func (s *server) subscribe(ctx context.Context, writer http.ResponseWriter, req 
 	for {
 		select {
 		case msg := <-subscriber.msgs:
-			ctx, cancel := context.WithTimeout(ctx, time.Second*5)
+			ctx, cancel := context.WithTimeout(ctx, time.Second*10)
 			defer cancel()
 			err := c.Write(ctx, websocket.MessageText, msg)
 			if err != nil {
@@ -129,7 +129,7 @@ func main() {
 
 			s.broadcast(msg)
 
-			time.Sleep(3 * time.Second)
+			time.Sleep(1 * time.Second)
 		}
 	}(srvr)
 
