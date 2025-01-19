@@ -11,6 +11,7 @@ import (
 
 	"github.com/badrobotxiii/Go-HTMX/internal/hardware"
 	"github.com/coder/websocket"
+	"github.com/pkg/browser"
 )
 
 type server struct {
@@ -91,44 +92,51 @@ func (s *server) broadcast(msg []byte) {
 func main() {
 	fmt.Println("Starting system monitor...")
 	srvr := NewServer()
+	browser.OpenURL("http://localhost:8081/")
+
 	go func(s *server) {
 		for {
+			//Get system information from hardware monitor
 			systemMonitor, err := hardware.GetSystem()
 			if err != nil {
 				fmt.Println(err)
 			} else {
 				fmt.Println(systemMonitor)
 			}
-
-			sysMon := systemMonitor
-
-			fmt.Printf("Sys Mon: %v\n", sysMon)
-			fmt.Printf("Runtime OS: %v\n", sysMon.RunTimeOS)
-
+			//Get disc information from hardware monitor
 			diskMonitor, err := hardware.GetDisk()
 			if err != nil {
 				fmt.Println(err)
 			} else {
 				fmt.Println(diskMonitor)
 			}
-
+			//Get CPU information from hardware monitor
 			cpuMonitor, err := hardware.GetCPU()
 			if err != nil {
 				fmt.Println(err)
 			} else {
 				fmt.Println(cpuMonitor)
 			}
-
+			//Acquire current time
 			timeStamp := time.Now().Format("2006-01-02 15:04:05")
 
+			//Format message buffer
 			msg := []byte(`
-			<div hx-swap-oob="innerHTML:#update-timestamp"> ` + timeStamp + ` </div>
+			<div hx-swap-oob="innerHTML:#update-timestamp"> ` + timeStamp + ` </div> 
 			<div hx-swap-oob="innerHTML:#operating-system"> ` + systemMonitor.RunTimeOS + ` </div>
-			<div hx-swap-oob="innerHTML:#disk-total"> ` + strconv.FormatUint(diskMonitor.DiscTotal, 10) + ` </div>
-			<div hx-swap-oob="innerHTML:#cpu-type"> ` + cpuMonitor.CpuType + ` </div>`)
+			<div hx-swap-oob="innerHTML:#host-name"> ` + systemMonitor.HostName + ` </div>
+			<div hx-swap-oob="innerHTML:#mem-total"> ` + strconv.FormatUint(systemMonitor.VmTotal, 10) + ` </div>
+			<div hx-swap-oob="innerHTML:#mem-used"> ` + strconv.FormatUint(systemMonitor.VmUsed, 10) + ` </div>
+			<div hx-swap-oob="innerHTML:#disc-total"> ` + strconv.FormatUint(diskMonitor.DiscTotal, 10) + ` </div>
+			<div hx-swap-oob="innerHTML:#disc-used"> ` + strconv.FormatUint(diskMonitor.DiscUsed, 10) + ` </div>
+			<div hx-swap-oob="innerHTML:#disc-free"> ` + strconv.FormatUint(diskMonitor.DiskFree, 10) + ` </div>
+			<div hx-swap-oob="innerHTML:#cpu-type"> ` + cpuMonitor.CpuType + ` </div>
+			<div hx-swap-oob="innerHTML:#cpu-cores"> ` + strconv.FormatInt(int64(cpuMonitor.CpuCores), 10) + ` </div>`)
 
+			//Broadcast message
 			s.broadcast(msg)
 
+			//Delay loop
 			time.Sleep(1 * time.Second)
 		}
 	}(srvr)

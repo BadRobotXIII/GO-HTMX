@@ -5,6 +5,7 @@ go 1.23.4
 require (
 	github.com/coder/websocket v1.8.12
 	github.com/go-gl/gldebug v0.0.0-20121021133040-30e6a6e03c6c
+	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 	github.com/shirou/gopsutil v3.21.11+incompatible
 	golang.org/x/text v0.21.0
 )
