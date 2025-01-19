@@ -60,8 +60,6 @@ func GetSystem() (SystemInfo, error) {
 	//output := fmt.Sprintf("Hostname: %s\nTotal Memory: %d\nUsed Memory: %d\nOS: %s", sys.hostName, sys.vmTotal, sys.vmTotal, sys.runTimeOS)
 	output := sys
 
-	fmt.Printf("Output: %v", output)
-
 	return output, nil
 }
 
@@ -75,11 +73,15 @@ func GetCPU() (CpuInfo, error) {
 		return CpuInfo{}, err
 	}
 	cpuInfo.CpuType = cpuStat[0].ModelName
+
 	cpuInfo.CpuCores = len(cpuStat)
+	temp := cpuStat[1].Cores
+	fmt.Println(temp)
+
+	fmt.Printf("CPU Cores: %v\n", len(cpuStat))
 
 	output := cpuInfo
 
-	fmt.Sprintf("CPU: %s\nCores %d", cpuInfo.CpuType, cpuInfo.CpuCores)
 	return output, nil
 }
 
@@ -95,7 +97,6 @@ func GetDisk() (DiskInfo, error) {
 	diskInf.DiscUsed = diskStat.Used
 	diskInf.DiscUsed = diskStat.Free
 
-	fmt.Sprintf("Total Disk Space: %d\n Used Disk Space: %d\n Free Disk Space: %d", diskInf.DiscTotal, diskInf.DiscUsed, diskInf.DiscUsed)
 	output := diskInf
 	return output, nil
 }
@@ -105,8 +106,6 @@ func GetGPU() GpuInfo {
 
 	gpu := gpuinfo.NVGpu{}
 	gpuInf.GpuFree = gpu.Free()
-
-	println("GPU Free: %d", gpuInf.GpuFree)
 
 	return gpuInf
 

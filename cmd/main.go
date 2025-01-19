@@ -100,23 +100,20 @@ func main() {
 			systemMonitor, err := hardware.GetSystem()
 			if err != nil {
 				fmt.Println(err)
-			} else {
-				fmt.Println(systemMonitor)
 			}
+
 			//Get disc information from hardware monitor
 			diskMonitor, err := hardware.GetDisk()
 			if err != nil {
 				fmt.Println(err)
-			} else {
-				fmt.Println(diskMonitor)
 			}
+
 			//Get CPU information from hardware monitor
 			cpuMonitor, err := hardware.GetCPU()
 			if err != nil {
 				fmt.Println(err)
-			} else {
-				fmt.Println(cpuMonitor)
 			}
+
 			//Acquire current time
 			timeStamp := time.Now().Format("2006-01-02 15:04:05")
 
