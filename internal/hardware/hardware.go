@@ -1,7 +1,6 @@
 package hardware
 
 import (
-	"fmt"
 	"runtime"
 
 	"github.com/go-gl/gldebug/gpuinfo"
@@ -22,7 +21,8 @@ type SystemInfo struct {
 
 type CpuInfo struct {
 	CpuType  string
-	CpuCores int
+	CpuCores int32
+	CpuSpeed float64
 }
 
 type DiskInfo struct {
@@ -39,6 +39,7 @@ type GpuInfo struct {
 
 // Get system information
 func GetSystem() (SystemInfo, error) {
+
 	//sys := new(SystemInfo) //New pointer to and instance of SystemInfo
 	sys := SystemInfo{} // New instance of SystemInfo
 
@@ -57,7 +58,6 @@ func GetSystem() (SystemInfo, error) {
 	}
 	sys.HostName = hostStat.Hostname
 
-	//output := fmt.Sprintf("Hostname: %s\nTotal Memory: %d\nUsed Memory: %d\nOS: %s", sys.hostName, sys.vmTotal, sys.vmTotal, sys.runTimeOS)
 	output := sys
 
 	return output, nil
@@ -65,7 +65,6 @@ func GetSystem() (SystemInfo, error) {
 
 // Get CPU data
 func GetCPU() (CpuInfo, error) {
-
 	cpuInfo := CpuInfo{}
 
 	cpuStat, err := cpu.Info()
@@ -73,12 +72,8 @@ func GetCPU() (CpuInfo, error) {
 		return CpuInfo{}, err
 	}
 	cpuInfo.CpuType = cpuStat[0].ModelName
-
-	cpuInfo.CpuCores = len(cpuStat)
-	temp := cpuStat[1].Cores
-	fmt.Println(temp)
-
-	fmt.Printf("CPU Cores: %v\n", len(cpuStat))
+	cpuInfo.CpuCores = cpuStat[0].Cores
+	cpuInfo.CpuSpeed = cpuStat[0].Mhz
 
 	output := cpuInfo
 
@@ -86,7 +81,7 @@ func GetCPU() (CpuInfo, error) {
 }
 
 // Get disk data
-func GetDisk() (DiskInfo, error) {
+func GetDisc() (DiskInfo, error) {
 	diskInf := DiskInfo{}
 	diskStat, err := disk.Usage("/")
 	if err != nil {

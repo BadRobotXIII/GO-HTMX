@@ -103,7 +103,7 @@ func main() {
 			}
 
 			//Get disc information from hardware monitor
-			diskMonitor, err := hardware.GetDisk()
+			diskMonitor, err := hardware.GetDisc()
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -128,7 +128,8 @@ func main() {
 			<div hx-swap-oob="innerHTML:#disc-used"> ` + strconv.FormatUint(diskMonitor.DiscUsed, 10) + ` </div>
 			<div hx-swap-oob="innerHTML:#disc-free"> ` + strconv.FormatUint(diskMonitor.DiskFree, 10) + ` </div>
 			<div hx-swap-oob="innerHTML:#cpu-type"> ` + cpuMonitor.CpuType + ` </div>
-			<div hx-swap-oob="innerHTML:#cpu-cores"> ` + strconv.FormatInt(int64(cpuMonitor.CpuCores), 10) + ` </div>`)
+			<div hx-swap-oob="innerHTML:#cpu-cores"> ` + strconv.FormatInt(int64(cpuMonitor.CpuCores), 10) + ` </div>
+			<div hx-swap-oob="innerHTML:#cpu-speed"> ` + fmt.Sprintf("%s Mhz", strconv.FormatFloat(cpuMonitor.CpuSpeed, 'f', 1, 64)) + ` </div>`)
 
 			//Broadcast message
 			s.broadcast(msg)
