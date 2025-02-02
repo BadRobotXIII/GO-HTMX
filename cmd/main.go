@@ -170,6 +170,7 @@ func main() {
 			<div hx-swap-oob="innerHTML:#cpu-cores"> ` + strconv.FormatInt(int64(cpuMonitor.CpuCores), 10) + ` </div>
 			<div hx-swap-oob="innerHTML:#cpu-speed"> ` + fmt.Sprintf("%s Mhz", strconv.FormatFloat(cpuMonitor.CpuSpeed, 'f', 1, 64)) + ` </div>`)
 
+			//fmt.Printf("HTML Message Byte Data: %v\n\n\n\n", msg)
 			//Broadcast message
 			s.broadcast(msg)
 
