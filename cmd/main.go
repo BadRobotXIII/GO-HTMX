@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -14,15 +15,44 @@ import (
 	"github.com/pkg/browser"
 )
 
-type server struct {
+type server struct { //Server structure
 	subscribeBuffer  int
 	mux              http.ServeMux
 	subscribersMutex sync.Mutex
 	subscribers      map[*subscriber]struct{}
 }
 
+type browserTab struct {
+	Description          string `json:"description"`
+	DevToolsFrontendUrl  string `json:"devtoolsFrontendUrl"`
+	FaviconUrl           string `json:"faviconurl"`
+	Id                   string `json:"id"`
+	ThumbnailUrl         string `json:"thumbnailUrl"`
+	Title                string `json:"title"`
+	Url                  string `json:"url"`
+	WebSocketDebuggerUrl string `json:"webSocketDebuggerUrl"`
+}
+
 type subscriber struct {
 	msgs chan []byte
+}
+
+func GetTabs(tabUrl string) ([]browserTab, error) {
+	u := "url"
+	fmt.Printf("%s\n", u)
+	resp, err := http.Get("http://localhost:8081/json")
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var tabs []browserTab
+	err = json.NewDecoder(resp.Body).Decode(&tabs)
+	if err != nil {
+		return nil, err
+	}
+
+	return tabs, nil
 }
 
 func NewServer() *server {
@@ -92,7 +122,16 @@ func (s *server) broadcast(msg []byte) {
 func main() {
 	fmt.Println("Starting system monitor...")
 	srvr := NewServer()
-	browser.OpenURL("http://localhost:8081/")
+
+	tabs, e := GetTabs("http://localhost:8081")
+	if e != nil {
+		fmt.Printf("Error retrieving tab data %s\n", e)
+	}
+	fmt.Print(tabs)
+
+	if !true {
+		browser.OpenURL("http://localhost:8081")
+	}
 
 	go func(s *server) {
 		for {
