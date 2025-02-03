@@ -22,7 +22,7 @@ type server struct { //Server structure
 	subscribers      map[*subscriber]struct{}
 }
 
-type browserTab struct {
+type browserTab struct { //Browser tab structure for Chrome
 	Description          string `json:"description"`
 	DevToolsFrontendUrl  string `json:"devtoolsFrontendUrl"`
 	FaviconUrl           string `json:"faviconurl"`
@@ -33,24 +33,33 @@ type browserTab struct {
 	WebSocketDebuggerUrl string `json:"webSocketDebuggerUrl"`
 }
 
-type subscriber struct {
+type subscriber struct { //subscriber
 	msgs chan []byte
 }
 
 func GetTabs(tabUrl string) ([]browserTab, error) {
-	u := "url"
-	fmt.Printf("%s\n", u)
-	resp, err := http.Get("http://localhost:8081/json")
+	//Start debugger with line below
+	//chrome --remote-debugging-port=9222
+	resp, err := http.Get("http://localhost:9222/json")
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	var tabs []browserTab
+	fmt.Printf("Raw debug data: %s\n", resp.Body)
 	err = json.NewDecoder(resp.Body).Decode(&tabs)
 	if err != nil {
 		return nil, err
 	}
+
+	//prettify JSON
+	prettyJson, err := json.MarshalIndent(tabs, "", "	")
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Printf("Pretty JSON: %s\n", prettyJson)
 
 	return tabs, nil
 }
@@ -123,15 +132,14 @@ func main() {
 	fmt.Println("Starting system monitor...")
 	srvr := NewServer()
 
-	tabs, e := GetTabs("http://localhost:8081")
+	tabs, e := GetTabs("http://localhost:9222")
 	if e != nil {
 		fmt.Printf("Error retrieving tab data %s\n", e)
+	} else {
+		fmt.Sprint(tabs)
 	}
-	fmt.Print(tabs)
 
-	if !true {
-		browser.OpenURL("http://localhost:8081")
-	}
+	browser.OpenURL("http://localhost:8081")
 
 	go func(s *server) {
 		for {
